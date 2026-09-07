@@ -32,33 +32,38 @@ to ensure data protection and resilience.
 
 ## Product walkthrough
 
-![Class allocation configuration](demo/screenshots/configuration.png)
+Class Allocation GUI :
+![Configuration screen](demo/flask_welcome.png)
 
-## Main capabilities
+Video Walkthrough on making a class allocation :
+![Configuration demo](demo/flask_test.mp4)
 
-- Excel-based cohort import and validation.
-- Configurable number of classes.
-- Class types configuration (language- or level-based types for eg.).
-- Recommended and custom optimisation weights.
-- Multi-criteria allocation engine.
-- Background execution with progress reporting.
-- Best-solution tracking across multiple iterations.
-- Excel export for leadership review.
-- French and English user interface.
-- Logging and basic error diagnostics.
-- Reset and stop controls for long-running calculations.
+Example of input :
+![Table input template](demo/input_table_example.png)
 
-## Allocation criteria already implemented
+Example of output :
+![Table input template](demo/output_example_1.png)
+![Table input template](demo/output_example_2.png)
 
-The optimisation model can account for:
+## Technical documentation
 
-- Behaviour scores.
-- Academic levels.
-- Gender balance.
-- Individual learning plans.
-- School-based and family-based support requirements.
-- Second language placement constraints.
-- Friendship requests.
-- Incompatible student pairs.
-- Reuse of previous-year class structures.
+- [Technical overview](docs/technical-overview.md)
+- [Allocation algorithm](docs/allocation-algorithm.md)
+- [Parameters and weights](docs/parameters-and-weights.md)
 
+## Brochure for schools
+
+- [Marketing one-page](brochure/index.html)
+- [Adaptability document (PDF)](brochure/adaptability.pdf)
+
+## Project status
+
+- Original system: deployed in a real school environment.
+- Public repository: documentation, screenshots and marketing material.
+- Production source code: not included.
+- Demo data: fully synthetic (screenshots use anonymised data).
+
+## Contact
+
+- Email: vincentselucas@gmail.com
+- LinkedIn: [https://www.linkedin.com/in/vincent-lucas-483b29295/](...)
