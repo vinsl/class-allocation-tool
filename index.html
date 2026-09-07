@@ -1,1521 +1,952 @@
-<!doctype html>
-<html lang="fr" data-theme="light">
+<!DOCTYPE html>
+<html lang="en" data-lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>Class Allocation Tool — Portfolio</title>
-  <meta
-    name="description"
-    content="Class Allocation Tool : application Python et Flask d'aide à la décision pour équilibrer l'allocation de classes à partir de données Excel."
-  >
-  <meta name="theme-color" content="#0a5d66">
-
-  <link rel="preconnect" href="https://api.fontshare.com">
-  <link
-    href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&f[]=boska@400,500,700&display=swap"
-    rel="stylesheet"
-  >
-
-  <style>
-    /*
-      Art direction: outil éducatif + expertise engineering.
-      Palette: surfaces minérales chaleureuses + accent teal maîtrisé.
-      Typographie: Boska pour le message stratégique, Satoshi pour la clarté technique.
-      Densité: éditoriale et structurée, pensée pour clients et recruteurs.
-    */
-
-    :root {
-      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
-      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
-      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
-      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
-      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
-      --text-2xl: clamp(2.1rem, 1.2rem + 3vw, 4.2rem);
-      --text-3xl: clamp(2.8rem, 1rem + 4.2vw, 5.4rem);
-
-      --space-1: 0.25rem;
-      --space-2: 0.5rem;
-      --space-3: 0.75rem;
-      --space-4: 1rem;
-      --space-5: 1.25rem;
-      --space-6: 1.5rem;
-      --space-8: 2rem;
-      --space-10: 2.5rem;
-      --space-12: 3rem;
-      --space-16: 4rem;
-      --space-20: 5rem;
-      --space-24: 6rem;
-      --space-32: 8rem;
-
-      --font-display: "Boska", Georgia, serif;
-      --font-body: "Satoshi", "Segoe UI", sans-serif;
-
-      --color-bg: #f6f4ee;
-      --color-surface: #fbfaf7;
-      --color-surface-2: #f0ede5;
-      --color-surface-dark: #11363b;
-      --color-text: #1d292a;
-      --color-muted: #5f6d6e;
-      --color-faint: #849091;
-      --color-border: rgba(29, 41, 42, 0.13);
-      --color-primary: #01696f;
-      --color-primary-hover: #004f55;
-      --color-primary-soft: #d7e9e7;
-      --color-gold: #bc7d25;
-      --color-white: #ffffff;
-
-      --radius-sm: 0.45rem;
-      --radius-md: 0.75rem;
-      --radius-lg: 1rem;
-      --radius-xl: 1.5rem;
-      --radius-full: 999px;
-
-      --shadow-sm: 0 1px 2px rgba(16, 35, 37, 0.05);
-      --shadow-md: 0 12px 28px rgba(16, 35, 37, 0.08);
-      --shadow-lg: 0 24px 54px rgba(16, 35, 37, 0.13);
-
-      --content-default: 70rem;
-      --content-wide: 78rem;
-      --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    [data-theme="dark"] {
-      --color-bg: #121a1b;
-      --color-surface: #182324;
-      --color-surface-2: #203031;
-      --color-surface-dark: #0c1516;
-      --color-text: #e1e8e6;
-      --color-muted: #adbbb9;
-      --color-faint: #7f908e;
-      --color-border: rgba(225, 232, 230, 0.14);
-      --color-primary: #68b1b6;
-      --color-primary-hover: #91c8cb;
-      --color-primary-soft: #243f41;
-      --color-gold: #e5ad5c;
-      --color-white: #f6f8f7;
-      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.24);
-      --shadow-md: 0 12px 28px rgba(0, 0, 0, 0.3);
-      --shadow-lg: 0 24px 54px rgba(0, 0, 0, 0.42);
-    }
-
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 5.5rem;
-    }
-
-    body {
-      min-height: 100dvh;
-      overflow-x: hidden;
-      color: var(--color-text);
-      background: var(--color-bg);
-      font-family: var(--font-body);
-      font-size: var(--text-base);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      text-rendering: optimizeLegibility;
-    }
-
-    a,
-    button {
-      transition:
-        color var(--transition),
-        background-color var(--transition),
-        border-color var(--transition),
-        transform var(--transition),
-        box-shadow var(--transition);
-    }
-
-    a {
-      color: inherit;
-      text-decoration: none;
-    }
-
-    button {
-      border: 0;
-      cursor: pointer;
-      font: inherit;
-    }
-
-    h1,
-    h2,
-    h3 {
-      color: var(--color-text);
-      text-wrap: balance;
-      line-height: 1.08;
-    }
-
-    h1,
-    h2 {
-      font-family: var(--font-display);
-      font-weight: 500;
-    }
-
-    p {
-      max-width: 68ch;
-      text-wrap: pretty;
-    }
-
-    :focus-visible {
-      outline: 3px solid var(--color-gold);
-      outline-offset: 4px;
-    }
-
-    .skip-link {
-      position: fixed;
-      top: -4rem;
-      left: var(--space-4);
-      z-index: 100;
-      padding: var(--space-3) var(--space-4);
-      color: var(--color-white);
-      background: var(--color-primary);
-      border-radius: var(--radius-sm);
-    }
-
-    .skip-link:focus {
-      top: var(--space-4);
-    }
-
-    .shell {
-      width: min(calc(100% - 2rem), var(--content-wide));
-      margin-inline: auto;
-    }
-
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--space-2);
-      color: var(--color-primary);
-      font-size: var(--text-xs);
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .eyebrow::before {
-      width: 0.55rem;
-      height: 0.55rem;
-      content: "";
-      background: var(--color-gold);
-      border-radius: var(--radius-full);
-    }
-
-    .section {
-      padding-block: clamp(var(--space-16), 9vw, var(--space-32));
-    }
-
-    .section-head {
-      display: grid;
-      grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
-      gap: var(--space-8);
-      align-items: end;
-      margin-bottom: clamp(var(--space-8), 5vw, var(--space-16));
-    }
-
-    .section-head h2 {
-      margin-top: var(--space-3);
-      font-size: var(--text-2xl);
-    }
-
-    .section-intro {
-      color: var(--color-muted);
-    }
-
-    /* Header */
-    .site-header {
-      position: sticky;
-      top: 0;
-      z-index: 50;
-      border-bottom: 1px solid var(--color-border);
-      background: color-mix(in srgb, var(--color-bg) 89%, transparent);
-      backdrop-filter: blur(14px);
-    }
-
-    .header-content {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 4.75rem;
-      gap: var(--space-4);
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      flex-shrink: 0;
-      gap: var(--space-2);
-      font-size: var(--text-sm);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-    }
-
-    .brand-mark {
-      display: grid;
-      width: 2rem;
-      height: 2rem;
-      overflow: hidden;
-      color: var(--color-white);
-      background: var(--color-primary);
-      border-radius: 0.55rem;
-      place-items: center;
-    }
-
-    .brand-mark svg {
-      width: 1.28rem;
-      height: 1.28rem;
-    }
-
-    .nav-links {
-      display: flex;
-      align-items: center;
-      gap: var(--space-5);
-      overflow-x: auto;
-      color: var(--color-muted);
-      font-size: var(--text-sm);
-      white-space: nowrap;
-    }
-
-    .nav-links a {
-      padding-block: var(--space-3);
-    }
-
-    .nav-links a:hover {
-      color: var(--color-primary);
-    }
-
-    .theme-toggle {
-      display: grid;
-      flex-shrink: 0;
-      width: 2.7rem;
-      height: 2.7rem;
-      color: var(--color-text);
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-full);
-      place-items: center;
-    }
-
-    .theme-toggle:hover {
-      color: var(--color-primary);
-      border-color: var(--color-primary);
-    }
-
-    .theme-toggle svg {
-      width: 1.2rem;
-      height: 1.2rem;
-    }
-
-    /* Hero */
-    .hero {
-      position: relative;
-      min-height: min(48rem, calc(100dvh - 4.75rem));
-      padding-block: clamp(var(--space-16), 10vw, var(--space-32));
-      overflow: hidden;
-      background:
-        linear-gradient(120deg, transparent 0%, transparent 53%, color-mix(in srgb, var(--color-primary) 7%, transparent) 53%, transparent 78%),
-        var(--color-bg);
-    }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.22fr) minmax(20rem, 0.78fr);
-      gap: clamp(var(--space-8), 7vw, var(--space-20));
-      align-items: center;
-    }
-
-    .hero-copy h1 {
-      max-width: 14ch;
-      margin-top: var(--space-4);
-      font-size: var(--text-3xl);
-      letter-spacing: -0.04em;
-    }
-
-    .hero-copy h1 em {
-      color: var(--color-primary);
-      font-style: italic;
-    }
-
-    .hero-lead {
-      max-width: 60ch;
-      margin-top: var(--space-6);
-      color: var(--color-muted);
-      font-size: var(--text-lg);
-    }
-
-    .hero-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-3);
-      margin-top: var(--space-8);
-    }
-
-    .button {
-      display: inline-flex;
-      min-height: 3rem;
-      align-items: center;
-      justify-content: center;
-      gap: var(--space-2);
-      padding: var(--space-3) var(--space-5);
-      font-size: var(--text-sm);
-      font-weight: 700;
-      border-radius: var(--radius-full);
-    }
-
-    .button-primary {
-      color: var(--color-white);
-      background: var(--color-primary);
-      box-shadow: 0 8px 18px color-mix(in srgb, var(--color-primary) 25%, transparent);
-    }
-
-    .button-primary:hover {
-      background: var(--color-primary-hover);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 24px color-mix(in srgb, var(--color-primary) 30%, transparent);
-    }
-
-    .button-secondary {
-      color: var(--color-text);
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-    }
-
-    .button-secondary:hover {
-      color: var(--color-primary);
-      border-color: var(--color-primary);
-      transform: translateY(-2px);
-    }
-
-    .micro-copy {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-3);
-      margin-top: var(--space-8);
-      color: var(--color-muted);
-      font-size: var(--text-sm);
-    }
-
-    .micro-copy span {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--space-2);
-    }
-
-    .micro-copy span::before {
-      width: 0.35rem;
-      height: 0.35rem;
-      content: "";
-      background: var(--color-primary);
-      border-radius: 50%;
-    }
-
-    .algorithm-panel {
-      position: relative;
-      min-height: 26rem;
-      padding: var(--space-6);
-      overflow: hidden;
-      color: #eff8f7;
-      background: var(--color-surface-dark);
-      border-radius: var(--radius-xl);
-      box-shadow: var(--shadow-lg);
-    }
-
-    .algorithm-panel::before {
-      position: absolute;
-      top: -11rem;
-      right: -9rem;
-      width: 22rem;
-      height: 22rem;
-      content: "";
-      border: 1px solid rgba(235, 250, 249, 0.2);
-      border-radius: 50%;
-      box-shadow:
-        0 0 0 2.5rem rgba(235, 250, 249, 0.05),
-        0 0 0 5rem rgba(235, 250, 249, 0.035),
-        0 0 0 7.5rem rgba(235, 250, 249, 0.02);
-    }
-
-    .panel-kicker,
-    .panel-note {
-      position: relative;
-      z-index: 1;
-      color: #b9d5d3;
-      font-size: var(--text-xs);
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .panel-title {
-      position: relative;
-      z-index: 1;
-      max-width: 12ch;
-      margin-top: var(--space-3);
-      color: #ffffff;
-      font-family: var(--font-display);
-      font-size: var(--text-xl);
-      font-weight: 500;
-      line-height: 1.05;
-    }
-
-    .score-card {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      gap: var(--space-5);
-      padding: var(--space-5);
-      margin-top: var(--space-10);
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.14);
-      border-radius: var(--radius-lg);
-      backdrop-filter: blur(8px);
-    }
-
-    .score-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-4);
-    }
-
-    .score-row span {
-      color: #c9dcda;
-      font-size: var(--text-sm);
-    }
-
-    .score-row strong {
-      color: #ffffff;
-      font-size: var(--text-sm);
-    }
-
-    .score-meter {
-      width: 100%;
-      height: 0.4rem;
-      overflow: hidden;
-      background: rgba(255, 255, 255, 0.15);
-      border-radius: var(--radius-full);
-    }
-
-    .score-meter i {
-      display: block;
-      height: 100%;
-      background: #88d0c9;
-      border-radius: inherit;
-    }
-
-    .panel-note {
-      position: absolute;
-      right: var(--space-6);
-      bottom: var(--space-6);
-      left: var(--space-6);
-      letter-spacing: 0.06em;
-    }
-
-    /* Evidence strip */
-    .evidence-strip {
-      border-top: 1px solid var(--color-border);
-      border-bottom: 1px solid var(--color-border);
-      background: var(--color-surface);
-    }
-
-    .evidence-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .evidence-item {
-      min-height: 8.4rem;
-      padding: var(--space-6);
-      border-right: 1px solid var(--color-border);
-    }
-
-    .evidence-item:last-child {
-      border-right: 0;
-    }
-
-    .evidence-number {
-      display: block;
-      color: var(--color-primary);
-      font-family: var(--font-display);
-      font-size: var(--text-xl);
-      line-height: 1;
-    }
-
-    .evidence-label {
-      display: block;
-      margin-top: var(--space-2);
-      color: var(--color-muted);
-      font-size: var(--text-sm);
-    }
-
-    /* Feature cards */
-    .feature-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
-      gap: var(--space-5);
-    }
-
-    .feature-card {
-      padding: clamp(var(--space-6), 4vw, var(--space-10));
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-xl);
-    }
-
-    .feature-card-dark {
-      color: #e6f4f2;
-      background: var(--color-surface-dark);
-      border-color: transparent;
-    }
-
-    .feature-card h3 {
-      margin-top: var(--space-3);
-      font-family: var(--font-body);
-      font-size: var(--text-lg);
-      font-weight: 700;
-    }
-
-    .feature-card-dark h3 {
-      color: #ffffff;
-    }
-
-    .feature-card p {
-      margin-top: var(--space-4);
-      color: var(--color-muted);
-    }
-
-    .feature-card-dark p {
-      color: #b9d5d3;
-    }
-
-    .check-list {
-      display: grid;
-      gap: var(--space-3);
-      margin-top: var(--space-6);
-      list-style: none;
-    }
-
-    .check-list li {
-      display: grid;
-      grid-template-columns: 1rem 1fr;
-      gap: var(--space-3);
-      align-items: start;
-      color: var(--color-muted);
-      font-size: var(--text-sm);
-    }
-
-    .feature-card-dark .check-list li {
-      color: #cce0de;
-    }
-
-    .check-list li::before {
-      display: grid;
-      width: 1rem;
-      height: 1rem;
-      margin-top: 0.27rem;
-      color: var(--color-primary);
-      content: "✓";
-      background: var(--color-primary-soft);
-      border-radius: 50%;
-      font-size: 0.72rem;
-      font-weight: 700;
-      line-height: 1;
-      place-items: center;
-    }
-
-    .feature-card-dark .check-list li::before {
-      color: #11363b;
-      background: #9cd8d2;
-    }
-
-    /* Workflow */
-    .workflow {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: var(--space-3);
-      counter-reset: workflow;
-    }
-
-    .workflow-step {
-      position: relative;
-      min-height: 13rem;
-      padding: var(--space-5);
-      background: var(--color-surface);
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      counter-increment: workflow;
-    }
-
-    .workflow-step::before {
-      display: block;
-      color: var(--color-gold);
-      content: "0" counter(workflow);
-      font-size: var(--text-xs);
-      font-weight: 700;
-      letter-spacing: 0.08em;
-    }
-
-    .workflow-step h3 {
-      margin-top: var(--space-5);
-      font-family: var(--font-body);
-      font-size: var(--text-base);
-      font-weight: 700;
-    }
-
-    .workflow-step p {
-      margin-top: var(--space-2);
-      color: var(--color-muted);
-      font-size: var(--text-sm);
-      line-height: 1.5;
-    }
-
-    /* Criteria */
-    .criteria-layout {
-      display: grid;
-      grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
-      gap: clamp(var(--space-8), 7vw, var(--space-20));
-      align-items: start;
-    }
-
-    .sticky-note {
-      position: sticky;
-      top: 7rem;
-      padding: var(--space-6);
-      background: var(--color-primary-soft);
-      border-radius: var(--radius-lg);
-    }
-
-    .sticky-note p {
-      margin-top: var(--space-3);
-      color: color-mix(in srgb, var(--color-primary) 75%, var(--color-text));
-      font-size: var(--text-sm);
-    }
-
-    .criteria-list {
-      border-top: 1px solid var(--color-border);
-    }
-
-    .criterion {
-      display: grid;
-      grid-template-columns: 2rem 1fr auto;
-      gap: var(--space-4);
-      align-items: center;
-      padding-block: var(--space-5);
-      border-bottom: 1px solid var(--color-border);
-    }
-
-    .criterion-index {
-      color: var(--color-gold);
-      font-family: var(--font-display);
-      font-size: var(--text-lg);
-    }
-
-    .criterion h3 {
-      font-family: var(--font-body);
-      font-size: var(--text-base);
-      font-weight: 700;
-    }
-
-    .criterion p {
-      margin-top: var(--space-1);
-      color: var(--color-muted);
-      font-size: var(--text-sm);
-    }
-
-    .criterion-tag {
-      padding: var(--space-1) var(--space-3);
-      color: var(--color-primary);
-      background: var(--color-primary-soft);
-      border-radius: var(--radius-full);
-      font-size: var(--text-xs);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    /* Tech */
-    .tech-section {
-      color: #e9f5f3;
-      background: var(--color-surface-dark);
-    }
-
-    .tech-section h2 {
-      color: #ffffff;
-    }
-
-    .tech-section .section-intro {
-      color: #b9d5d3;
-    }
-
-    .tech-section .eyebrow {
-      color: #a9d9d4;
-    }
-
-    .tech-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: var(--space-5);
-    }
-
-    .tech-card {
-      padding: var(--space-6);
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      border-radius: var(--radius-lg);
-    }
-
-    .tech-card h3 {
-      color: #ffffff;
-      font-family: var(--font-body);
-      font-size: var(--text-base);
-      font-weight: 700;
-    }
-
-    .tech-card p {
-      margin-top: var(--space-3);
-      color: #c4ddda;
-      font-size: var(--text-sm);
-    }
-
-    .tech-card ul {
-      display: grid;
-      gap: var(--space-2);
-      margin-top: var(--space-5);
-      color: #d9ebe8;
-      font-size: var(--text-sm);
-      list-style: none;
-    }
-
-    .tech-card li {
-      display: flex;
-      gap: var(--space-2);
-    }
-
-    .tech-card li::before {
-      color: #91d1ca;
-      content: "—";
-    }
-
-    /* Recruiter / Contact */
-    .recruiter-card {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr);
-      gap: var(--space-8);
-      padding: clamp(var(--space-8), 5vw, var(--space-16));
-      color: #edf8f7;
-      background: var(--color-primary);
-      border-radius: var(--radius-xl);
-    }
-
-    .recruiter-card h2 {
-      margin-top: var(--space-3);
-      color: #ffffff;
-      font-size: var(--text-2xl);
-    }
-
-    .recruiter-card p {
-      margin-top: var(--space-5);
-      color: #d1e9e6;
-    }
-
-    .recruiter-points {
-      display: grid;
-      gap: var(--space-4);
-      align-content: center;
-    }
-
-    .recruiter-point {
-      padding: var(--space-4);
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      border-radius: var(--radius-md);
-    }
-
-    .recruiter-point strong {
-      display: block;
-      color: #ffffff;
-      font-size: var(--text-sm);
-    }
-
-    .recruiter-point span {
-      display: block;
-      margin-top: var(--space-1);
-      color: #d4ebe8;
-      font-size: var(--text-sm);
-    }
-
-    .contact-section {
-      padding-bottom: clamp(var(--space-16), 9vw, var(--space-32));
-    }
-
-    .contact-box {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--space-8);
-      padding-top: var(--space-10);
-      border-top: 1px solid var(--color-border);
-    }
-
-    .contact-box h2 {
-      margin-top: var(--space-3);
-      font-size: var(--text-xl);
-    }
-
-    .contact-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--space-3);
-    }
-
-    /* Footer */
-    .site-footer {
-      padding-block: var(--space-8);
-      color: var(--color-faint);
-      border-top: 1px solid var(--color-border);
-      font-size: var(--text-sm);
-    }
-
-    .footer-content {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: var(--space-3);
-    }
-
-    /* Reveal animation */
-    .reveal {
-      opacity: 0;
-      transform: translateY(1.5rem);
-      transition:
-        opacity 650ms cubic-bezier(0.16, 1, 0.3, 1),
-        transform 650ms cubic-bezier(0.16, 1, 0.3, 1);
-    }
-
-    .reveal.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    @media (max-width: 960px) {
-      .hero-grid,
-      .criteria-layout,
-      .recruiter-card {
-        grid-template-columns: 1fr;
-      }
-
-      .workflow {
-        grid-template-columns: repeat(3, 1fr);
-      }
-
-      .tech-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .sticky-note {
-        position: static;
-      }
-
-      .feature-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 720px) {
-      .shell {
-        width: min(calc(100% - 1.25rem), var(--content-wide));
-      }
-
-      .header-content {
-        min-height: 4.25rem;
-      }
-
-      .brand span {
-        display: none;
-      }
-
-      .nav-links {
-        gap: var(--space-4);
-        font-size: var(--text-xs);
-      }
-
-      .nav-links a:nth-child(3),
-      .nav-links a:nth-child(4) {
-        display: none;
-      }
-
-      .section-head {
-        grid-template-columns: 1fr;
-        gap: var(--space-4);
-      }
-
-      .evidence-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .evidence-item:nth-child(2) {
-        border-right: 0;
-      }
-
-      .evidence-item:nth-child(-n + 2) {
-        border-bottom: 1px solid var(--color-border);
-      }
-
-      .workflow {
-        grid-template-columns: 1fr;
-      }
-
-      .workflow-step {
-        min-height: auto;
-      }
-
-      .tech-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .criterion {
-        grid-template-columns: 1.7rem 1fr;
-      }
-
-      .criterion-tag {
-        grid-column: 2;
-        justify-self: start;
-      }
-
-      .micro-copy {
-        display: grid;
-      }
-
-      .hero-actions,
-      .contact-links {
-        width: 100%;
-      }
-
-      .hero-actions .button,
-      .contact-links .button {
-        flex: 1 1 12rem;
-      }
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      *,
-      *::before,
-      *::after {
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
-        animation-duration: 0.01ms !important;
-      }
-
-      .reveal {
-        opacity: 1;
-        transform: none;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Class Allocation Tool — Case Study by Vincent Lucas</title>
+<meta name="description" content="A weighted multi-criteria allocation engine that turns a school cohort spreadsheet into balanced classes. Case study by Vincent Lucas.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%2310182B%22/><circle cx=%2232%22 cy=%2238%22 r=%229%22 fill=%22%232F9E6E%22/><circle cx=%2268%22 cy=%2238%22 r=%229%22 fill=%22%23D9A62E%22/><circle cx=%2250%22 cy=%2266%22 r=%229%22 fill=%22%235B8DEF%22/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#10182B;
+    --ink-soft:#1B2440;
+    --paper:#EEF1F5;
+    --paper-deep:#E2E7EE;
+    --chalk:#F5F7FB;
+    --green:#2F9E6E;
+    --green-deep:#1F7E58;
+    --gold:#D9A62E;
+    --blue:#5B8DEF;
+    --line:rgba(16,24,43,0.13);
+    --line-light:rgba(245,247,251,0.16);
+    --muted:rgba(16,24,43,0.62);
+    --muted-light:rgba(245,247,251,0.68);
+    --radius:7px;
+    --serif-display:'Space Grotesk', 'IBM Plex Sans', sans-serif;
+    --sans:'IBM Plex Sans', -apple-system, sans-serif;
+    --mono:'IBM Plex Mono', 'SFMono-Regular', monospace;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    font-size:16px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important;}
+  }
+
+  h1,h2,h3,.display{
+    font-family:var(--serif-display);
+    font-weight:600;
+    letter-spacing:-0.01em;
+    margin:0;
+  }
+  .mono{font-family:var(--mono);}
+  a{color:inherit;}
+  img{max-width:100%; display:block;}
+  button{font-family:inherit;}
+
+  .wrap{max-width:1120px; margin:0 auto; padding:0 28px;}
+  .prose{max-width:660px;}
+
+  /* ---------- Nav ---------- */
+  header.topnav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(238,241,245,0.92);
+    backdrop-filter:blur(8px);
+    border-bottom:1px solid var(--line);
+  }
+  .topnav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 28px; max-width:1120px; margin:0 auto;
+  }
+  .brand{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--serif-display); font-weight:600; font-size:16px;
+    text-decoration:none; color:var(--ink);
+  }
+  .brand-mark{width:20px; height:20px; border-radius:5px; background:var(--ink); position:relative; flex:none;}
+  .brand-mark span{position:absolute; width:6px; height:6px; border-radius:50%;}
+  .brand-mark span:nth-child(1){background:var(--green); top:3px; left:3px;}
+  .brand-mark span:nth-child(2){background:var(--gold); top:3px; right:3px;}
+  .brand-mark span:nth-child(3){background:var(--blue); bottom:3px; left:7px;}
+  nav.navlinks{display:flex; gap:26px; align-items:center;}
+  nav.navlinks a{
+    font-size:14.5px; text-decoration:none; color:var(--ink); opacity:0.75;
+    padding:4px 0; border-bottom:1px solid transparent; transition:opacity .15s, border-color .15s;
+  }
+  nav.navlinks a:hover{opacity:1; border-color:var(--green);}
+  .nav-right{display:flex; align-items:center; gap:14px;}
+  .lang-toggle{
+    display:flex; border:1px solid var(--line); border-radius:999px; overflow:hidden; font-family:var(--mono); font-size:12.5px;
+  }
+  .lang-toggle button{
+    border:none; background:transparent; padding:6px 12px; cursor:pointer; color:var(--muted); letter-spacing:.02em;
+  }
+  .lang-toggle button.active{background:var(--ink); color:var(--chalk);}
+  .gh-link{display:flex; align-items:center; opacity:0.8; transition:opacity .15s;}
+  .gh-link:hover{opacity:1;}
+  .navburger{display:none; background:none; border:none; cursor:pointer; padding:4px;}
+  .navburger span{display:block; width:22px; height:2px; background:var(--ink); margin:5px 0;}
+
+  @media (max-width:860px){
+    nav.navlinks{
+      position:absolute; top:100%; left:0; right:0; background:var(--paper);
+      flex-direction:column; align-items:flex-start; gap:0; border-bottom:1px solid var(--line);
+      max-height:0; overflow:hidden; transition:max-height .25s ease;
+    }
+    nav.navlinks.open{max-height:340px;}
+    nav.navlinks a{width:100%; padding:14px 28px; border-bottom:1px solid var(--line);}
+    .navburger{display:block;}
+  }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    background:radial-gradient(ellipse 900px 500px at 78% 15%, rgba(91,141,239,0.12), transparent 60%), var(--ink);
+    color:var(--chalk);
+    padding:76px 0 60px;
+    overflow:hidden;
+  }
+  .hero-grid{
+    display:grid; grid-template-columns:1.05fr 0.95fr; gap:52px; align-items:center;
+  }
+  .kicker{
+    font-size:13.5px; color:var(--muted-light); margin:0 0 18px;
+    display:inline-flex; align-items:center; gap:8px;
+  }
+  .kicker::before{content:''; width:6px; height:6px; border-radius:50%; background:var(--green); flex:none;}
+  h1.hero-title{
+    font-size:clamp(32px, 4.4vw, 50px); line-height:1.09; color:var(--chalk); margin-bottom:22px;
+  }
+  p.hero-sub{
+    font-size:17px; color:var(--muted-light); max-width:520px; margin-bottom:30px;
+  }
+  .hero-ctas{display:flex; gap:12px; flex-wrap:wrap;}
+  .btn{
+    display:inline-flex; align-items:center; gap:8px; padding:13px 22px; border-radius:var(--radius);
+    font-size:14.5px; font-weight:500; text-decoration:none; cursor:pointer; border:1px solid transparent;
+    transition:transform .12s ease, background .15s, border-color .15s, color .15s;
+  }
+  .btn:active{transform:translateY(1px);}
+  .btn-primary{background:var(--green); color:#fff;}
+  .btn-primary:hover{background:var(--green-deep);}
+  .btn-ghost{border-color:var(--line-light); color:var(--chalk);}
+  .btn-ghost:hover{border-color:var(--chalk);}
+  .btn-dark{border-color:var(--line); color:var(--ink);}
+  .btn-dark:hover{border-color:var(--ink);}
+
+  .hero-visual{
+    position:relative; border:1px solid var(--line-light); border-radius:12px;
+    background:rgba(245,247,251,0.03); aspect-ratio:1/0.86;
+  }
+  #heroCanvas{width:100%; height:100%; display:block; border-radius:12px;}
+  .hero-readout{
+    position:absolute; left:16px; bottom:14px; display:flex; gap:18px;
+    font-family:var(--mono); font-size:12px; color:var(--muted-light);
+  }
+  .hero-readout b{color:var(--chalk); font-weight:500;}
+
+  .statline{
+    border-top:1px solid var(--line-light); margin-top:52px; padding-top:22px;
+    display:grid; grid-template-columns:repeat(3,1fr); gap:24px;
+  }
+  .statline .stat b{
+    display:block; font-family:var(--serif-display); font-size:26px; color:var(--chalk); margin-bottom:4px;
+  }
+  .statline .stat span{font-size:13.5px; color:var(--muted-light);}
+
+  @media (max-width:860px){
+    .hero-grid{grid-template-columns:1fr;}
+    .hero-visual{order:-1; aspect-ratio:1/0.62;}
+    .statline{grid-template-columns:1fr; gap:16px;}
+  }
+
+  /* ---------- Section shells ---------- */
+  section{padding:88px 0;}
+  section.alt{background:var(--paper-deep);}
+  .section-head{margin-bottom:44px; max-width:660px;}
+  .section-head h2{font-size:clamp(26px,3vw,34px); margin-bottom:14px;}
+  .section-head p{color:var(--muted); font-size:16px;}
+
+  /* Problem tags */
+  .tagrow{display:flex; flex-wrap:wrap; gap:10px; margin-top:26px;}
+  .tag{
+    font-family:var(--mono); font-size:12.5px; padding:7px 13px; border:1px solid var(--line);
+    border-radius:999px; color:var(--ink); background:rgba(16,24,43,0.03);
+  }
+
+  /* Solution steps */
+  .steps{counter-reset:step; display:grid; grid-template-columns:1fr 1fr; gap:0 48px;}
+  .step{
+    counter-increment:step; padding:22px 0; border-top:1px solid var(--line);
+    display:grid; grid-template-columns:34px 1fr; gap:14px;
+  }
+  .step::before{
+    content:counter(step); font-family:var(--mono); font-size:13px; color:var(--green); padding-top:2px;
+  }
+  .step h3{font-size:16.5px; margin-bottom:5px;}
+  .step p{margin:0; font-size:14.5px; color:var(--muted);}
+
+  .mockup{
+    margin-top:46px; border:1px solid var(--line); border-radius:10px; overflow:hidden;
+    box-shadow:0 24px 48px -30px rgba(16,24,43,0.35);
+  }
+  .mockup-bar{
+    display:flex; align-items:center; gap:7px; padding:10px 14px; background:var(--paper-deep); border-bottom:1px solid var(--line);
+  }
+  .mockup-bar span{width:9px; height:9px; border-radius:50%; background:var(--line);}
+  .mockup img{width:100%;}
+
+  @media (max-width:760px){ .steps{grid-template-columns:1fr;} }
+
+  /* Architecture diagram */
+  .diagram{display:flex; flex-direction:column; align-items:center; gap:0; margin-top:48px;}
+  .dlayer{
+    width:100%; max-width:640px; border:1px solid var(--line); border-radius:var(--radius);
+    background:#fff; padding:16px 20px; display:flex; align-items:center; justify-content:space-between; gap:16px;
+  }
+  .dlayer .name{font-weight:500; font-size:14.5px;}
+  .dlayer .meta{font-family:var(--mono); font-size:11.5px; color:var(--muted); text-align:right;}
+  .dconnector{width:1px; height:26px; background:var(--line); position:relative;}
+  .dconnector::after{
+    content:''; position:absolute; bottom:-1px; left:50%; transform:translateX(-50%);
+    border:4px solid transparent; border-top-color:var(--muted);
+  }
+  .dsplit{display:flex; gap:16px; width:100%; max-width:640px;}
+  .dsplit .dlayer{flex:1; max-width:none;}
+
+  .diagram-note{margin-top:28px; font-size:14px; color:var(--muted); max-width:640px;}
+
+  .codecard{
+    margin-top:40px; background:var(--ink); border-radius:10px; padding:22px 24px; overflow-x:auto;
+  }
+  .codecard .filename{font-family:var(--mono); font-size:12px; color:var(--muted-light); margin-bottom:14px; display:block;}
+  .codecard pre{margin:0; font-family:var(--mono); font-size:13px; line-height:1.7; color:#D7DEEA;}
+  .tok-kw{color:#7FB8F5;} .tok-str{color:#9FD8A8;} .tok-com{color:#7A8299;} .tok-fn{color:#D9A62E;} .tok-type{color:#E8A9E0;}
+
+  /* Algorithm */
+  .flowmini{display:flex; align-items:center; gap:0; margin-top:8px; flex-wrap:wrap;}
+  .flowmini .fnode{
+    font-family:var(--mono); font-size:12px; padding:7px 12px; border:1px solid var(--line); border-radius:999px; background:#fff;
+  }
+  .flowmini .farrow{color:var(--muted); padding:0 8px; font-size:13px;}
+
+  .formulas{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:32px;}
+  .formula{border:1px solid var(--line); border-radius:var(--radius); padding:18px 18px 16px; background:#fff;}
+  .formula .flabel{font-size:13px; color:var(--muted); margin-bottom:10px;}
+  .formula .fexpr{font-family:var(--mono); font-size:16px; color:var(--ink);}
+
+  table.weights{width:100%; border-collapse:collapse; margin-top:36px; font-size:14.5px;}
+  table.weights th{
+    text-align:left; font-size:12.5px; color:var(--muted); font-weight:500; padding:0 0 10px; border-bottom:1px solid var(--line);
+  }
+  table.weights td{padding:13px 0; border-bottom:1px solid var(--line); vertical-align:top;}
+  table.weights td.w{font-family:var(--mono); text-align:right; padding-right:6px; white-space:nowrap;}
+  table.weights td.name{font-weight:500; white-space:nowrap; padding-right:18px;}
+  table.weights .bar{height:5px; border-radius:3px; background:var(--green); margin-top:8px; max-width:160px;}
+  .weights-note{font-size:13px; color:var(--muted); margin-top:14px;}
+
+  @media (max-width:760px){ .formulas{grid-template-columns:1fr;} table.weights .name{white-space:normal;} }
+
+  /* Skills */
+  .skillcols{display:grid; grid-template-columns:repeat(3,1fr); gap:36px; margin-top:44px;}
+  .skillcol h3{font-size:15.5px; margin-bottom:14px; padding-bottom:12px; border-top:2px solid var(--ink); padding-top:14px;}
+  .skillcol ul{margin:0; padding:0; list-style:none;}
+  .skillcol li{
+    font-size:14.5px; color:var(--muted); padding:9px 0; border-bottom:1px solid var(--line);
+  }
+  .skillcol li:last-child{border-bottom:none;}
+  @media (max-width:860px){ .skillcols{grid-template-columns:1fr; gap:8px;} }
+
+  /* Cloud badge */
+  .cloudrow{display:flex; gap:36px; align-items:center; flex-wrap:wrap; margin-top:38px;}
+  .cert-badge{
+    display:flex; align-items:center; gap:14px; border:1px solid var(--line); border-radius:var(--radius);
+    padding:16px 20px; background:#fff; flex:1; min-width:280px;
+  }
+  .cert-badge .dot{width:10px; height:10px; border-radius:50%; background:var(--gold); flex:none;}
+  .cert-badge .ctitle{font-weight:500; font-size:14.5px; margin-bottom:3px;}
+  .cert-badge .cstatus{font-family:var(--mono); font-size:12.5px; color:var(--gold);}
+
+  /* Contact */
+  .contact{background:var(--ink); color:var(--chalk);}
+  .contact .section-head p{color:var(--muted-light);}
+  .contact .section-head h2{color:var(--chalk);}
+  .ccols{display:grid; grid-template-columns:1fr 1fr; gap:28px; margin-top:44px;}
+  .ccard{
+    border:1px solid var(--line-light); border-radius:10px; padding:28px; transition:border-color .5s, background .5s;
+  }
+  .ccard.pulse{border-color:var(--green); background:rgba(47,158,110,0.08);}
+  .ccard h3{font-size:18px; margin-bottom:10px; color:var(--chalk);}
+  .ccard p{font-size:14.5px; color:var(--muted-light); margin-bottom:20px;}
+  .ccard .btnrow{display:flex; gap:10px; flex-wrap:wrap;}
+  @media (max-width:760px){ .ccols{grid-template-columns:1fr;} }
+
+  footer{
+    background:var(--ink); border-top:1px solid var(--line-light); color:var(--muted-light);
+    padding:26px 0 34px; font-size:13px;
+  }
+  .footer-inner{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;}
+  .footer-links{display:flex; gap:18px;}
+  .footer-links a{text-decoration:none; opacity:.85;}
+  .footer-links a:hover{opacity:1; color:var(--chalk);}
+  .fineprint{max-width:1120px; margin:14px auto 0; padding:0 28px; font-size:12px; opacity:0.55;}
+
+  :focus-visible{outline:2px solid var(--blue); outline-offset:2px;}
+</style>
 </head>
-
 <body>
-  <a class="skip-link" href="#main-content">Aller au contenu principal</a>
 
-  <header class="site-header">
-    <div class="shell header-content">
-      <a class="brand" href="#top" aria-label="Retour en haut de la page">
-        <span class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M4 6.5 12 3l8 3.5-8 3-8-3Z"></path>
-            <path d="M6.5 9.7v5.2c0 1.6 2.5 3.1 5.5 3.1s5.5-1.5 5.5-3.1V9.7"></path>
-            <path d="M20 7v6"></path>
-          </svg>
-        </span>
-        <span>Class Allocation Tool</span>
+<header class="topnav">
+  <div class="topnav-inner">
+    <a href="#top" class="brand"><span class="brand-mark"><span></span><span></span><span></span></span> Class Allocation Tool</a>
+    <nav class="navlinks" id="navlinks">
+      <a href="#problem" data-i18n="nav.problem">The problem</a>
+      <a href="#solution" data-i18n="nav.solution">The solution</a>
+      <a href="#architecture" data-i18n="nav.architecture">How it works</a>
+      <a href="#algorithm" data-i18n="nav.algorithm">The algorithm</a>
+      <a href="#skills" data-i18n="nav.skills">Skills</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="nav-right">
+      <div class="lang-toggle" role="group" aria-label="Language">
+        <button type="button" data-set-lang="en" class="active">EN</button>
+        <button type="button" data-set-lang="fr">FR</button>
+      </div>
+      <a class="gh-link" href="https://github.com/REPLACE_WITH_YOUR_USERNAME/class-allocation-tool" target="_blank" rel="noopener" aria-label="GitHub repository">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.73.5.5 5.73.5 12c0 5.08 3.29 9.39 7.86 10.9.57.1.78-.25.78-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.35-3.88-1.35-.52-1.33-1.28-1.68-1.28-1.68-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.72-1.54-2.56-.29-5.25-1.28-5.25-5.7 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.58.24 2.75.12 3.04.74.81 1.18 1.84 1.18 3.1 0 4.43-2.7 5.4-5.27 5.69.42.36.78 1.08.78 2.18 0 1.57-.02 2.84-.02 3.23 0 .3.21.66.79.55A11.5 11.5 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z"/></svg>
       </a>
-
-      <nav class="nav-links" aria-label="Navigation principale">
-        <a href="#problem">Problème</a>
-        <a href="#solution">Solution</a>
-        <a href="#algorithm">Algorithme</a>
-        <a href="#skills">Compétences</a>
-        <a href="#recruiters">AWS / DevOps</a>
-        <a href="#contact">Contact</a>
-      </nav>
-
-      <button class="theme-toggle" type="button" aria-label="Activer le mode sombre" data-theme-toggle>
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-        </svg>
-      </button>
+      <button class="navburger" id="navburger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>
     </div>
-  </header>
+  </div>
+</header>
 
-  <main id="main-content">
-    <section class="hero" id="top">
-      <div class="shell hero-grid">
-        <div class="hero-copy reveal">
-          <span class="eyebrow">Case study · Python / Flask</span>
+<main id="top">
 
-          <h1>
-            Allouer des classes avec plus de <em>méthode</em>, sans remplacer le jugement humain.
-          </h1>
-
-          <p class="hero-lead">
-            Une application d’aide à la décision qui transforme un fichier Excel de cohorte
-            en propositions de classes équilibrées, explicables et prêtes à être revues par les équipes pédagogiques.
-          </p>
-
-          <div class="hero-actions">
-            <a class="button button-primary" href="#solution">
-              Découvrir la solution
-              <span aria-hidden="true">↓</span>
-            </a>
-            <a class="button button-secondary" href="#contact">
-              Discuter du projet
-              <span aria-hidden="true">→</span>
-            </a>
-          </div>
-
-          <div class="micro-copy" aria-label="Technologies et cadre de réalisation">
-            <span>Python · Flask · pandas</span>
-            <span>Optimisation multi-critères</span>
-            <span>Projet mené en autonomie</span>
-          </div>
-        </div>
-
-        <aside class="algorithm-panel reveal" aria-label="Aperçu du fonctionnement de l'algorithme">
-          <span class="panel-kicker">Moteur de décision</span>
-          <h2 class="panel-title">Plusieurs contraintes. Une allocation à examiner.</h2>
-
-          <div class="score-card">
-            <div>
-              <div class="score-row">
-                <span>Équilibre académique</span>
-                <strong>évalué</strong>
-              </div>
-              <div class="score-meter"><i style="width: 82%"></i></div>
-            </div>
-
-            <div>
-              <div class="score-row">
-                <span>Relations WITH / WITHOUT</span>
-                <strong>évaluées</strong>
-              </div>
-              <div class="score-meter"><i style="width: 74%"></i></div>
-            </div>
-
-            <div>
-              <div class="score-row">
-                <span>Contraintes de classe</span>
-                <strong>vérifiées</strong>
-              </div>
-              <div class="score-meter"><i style="width: 94%"></i></div>
-            </div>
-          </div>
-
-          <span class="panel-note">Un score aide à comparer les propositions — il ne remplace pas la décision pédagogique.</span>
-        </aside>
-      </div>
-    </section>
-
-    <section class="evidence-strip" aria-label="Résumé du projet">
-      <div class="shell evidence-grid">
-        <div class="evidence-item reveal">
-          <span class="evidence-number">Excel →</span>
-          <span class="evidence-label">Cohorte importée, normalisée et validée</span>
-        </div>
-        <div class="evidence-item reveal">
-          <span class="evidence-number">Multi‑critères</span>
-          <span class="evidence-label">Règles, préférences et équilibre évalués ensemble</span>
-        </div>
-        <div class="evidence-item reveal">
-          <span class="evidence-number">Flask</span>
-          <span class="evidence-label">Workflow web simple pour les utilisateurs non techniques</span>
-        </div>
-        <div class="evidence-item reveal">
-          <span class="evidence-number">Excel ←</span>
-          <span class="evidence-label">Résultat exporté avec statistiques de revue</span>
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <p class="kicker" data-i18n="hero.kicker">A software case study</p>
+        <h1 class="hero-title" data-i18n="hero.title">Turning one chaotic class list into balanced classrooms.</h1>
+        <p class="hero-sub" data-i18n="hero.sub">A weighted, multi-criteria allocation engine that assigns every student to a class in minutes — balancing academic levels, behaviour, gender, language support and friendships at once. Designed, built and shipped end-to-end as an independent engineer.</p>
+        <div class="hero-ctas">
+          <a href="#contact" class="btn btn-primary" data-audience="school" data-i18n="hero.ctaSchool">I need this for a school</a>
+          <a href="#contact" class="btn btn-ghost" data-audience="recruit" data-i18n="hero.ctaHire">I'm hiring for cloud &amp; DevOps</a>
         </div>
       </div>
-    </section>
-
-    <section class="section" id="problem">
-      <div class="shell">
-        <div class="section-head reveal">
-          <div>
-            <span class="eyebrow">Le contexte</span>
-            <h2>Une tâche essentielle, mais difficile à industrialiser.</h2>
-          </div>
-          <p class="section-intro">
-            Répartir des élèves ne consiste pas seulement à équilibrer les effectifs.
-            Il faut concilier plusieurs critères parfois contradictoires tout en gardant
-            un processus compréhensible pour la direction et les équipes éducatives.
-          </p>
-        </div>
-
-        <div class="feature-grid">
-          <article class="feature-card reveal">
-            <span class="eyebrow">Le défi métier</span>
-            <h3>Passer d’une allocation manuelle à une démarche structurée.</h3>
-            <p>
-              L’approche manuelle demande beaucoup de temps et rend difficile la comparaison
-              entre différentes options. Le projet organise les données, les contraintes et les compromis
-              dans un même processus d’aide à la décision.
-            </p>
-
-            <ul class="check-list">
-              <li>Équilibrer des niveaux académiques, le comportement et la mixité.</li>
-              <li>Prendre en compte les besoins de soutien et les types de classe adaptés.</li>
-              <li>Respecter des contraintes relationnelles et des exclusions explicites.</li>
-              <li>Fournir une proposition révisable plutôt qu’une décision automatisée.</li>
-            </ul>
-          </article>
-
-          <article class="feature-card feature-card-dark reveal">
-            <span class="panel-kicker">Le principe</span>
-            <h3>L’algorithme assiste. L’équipe éducative décide.</h3>
-            <p>
-              L’outil produit une allocation candidate accompagnée de statistiques.
-              Les responsables peuvent alors l’inspecter, en discuter et ajuster les placements
-              selon les considérations pédagogiques, pastorales ou de safeguarding.
-            </p>
-
-            <ul class="check-list">
-              <li>Aucune donnée scolaire réelle n’est publiée dans ce portfolio.</li>
-              <li>Le code et la configuration de production restent propriétaires.</li>
-              <li>Les supports publics utilisent une terminologie et des exemples anonymisés.</li>
-            </ul>
-          </article>
+      <div class="hero-visual">
+        <canvas id="heroCanvas" aria-hidden="true"></canvas>
+        <div class="hero-readout">
+          <span><span data-i18n="hero.readoutAttemptLabel">Attempt</span> <b id="rdAttempt">1</b> <span data-i18n="hero.readoutOfLabel">of</span> <b id="rdMax">40</b></span>
+          <span><span data-i18n="hero.readoutCostLabel">Best cost</span> <b id="rdCost">—</b></span>
         </div>
       </div>
-    </section>
-
-    <section class="section" id="solution">
-      <div class="shell">
-        <div class="section-head reveal">
-          <div>
-            <span class="eyebrow">La solution</span>
-            <h2>Un parcours clair, de la cohorte au fichier de revue.</h2>
-          </div>
-          <p class="section-intro">
-            L’application web locale guide l’utilisateur de l’import du fichier Excel
-            jusqu’au téléchargement d’un workbook structuré pour la vérification opérationnelle.
-          </p>
-        </div>
-
-        <div class="workflow">
-          <article class="workflow-step reveal">
-            <h3>Importer</h3>
-            <p>Chargement d’un fichier Excel contenant les informations de la cohorte.</p>
-          </article>
-          <article class="workflow-step reveal">
-            <h3>Valider</h3>
-            <p>Nettoyage, détection des élèves et contrôles des champs utiles au moteur.</p>
-          </article>
-          <article class="workflow-step reveal">
-            <h3>Configurer</h3>
-            <p>Nombre de classes, catégories de classes et pondérations recommandées ou personnalisées.</p>
-          </article>
-          <article class="workflow-step reveal">
-            <h3>Optimiser</h3>
-            <p>Génération de plusieurs allocations et conservation de la meilleure solution valide.</p>
-          </article>
-          <article class="workflow-step reveal">
-            <h3>Examiner</h3>
-            <p>Export Excel avec statistiques globales et feuilles détaillées par classe.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="algorithm">
-      <div class="shell criteria-layout">
-        <aside class="sticky-note reveal">
-          <span class="eyebrow">Comment le score est utilisé</span>
-          <p>
-            Les critères sont transformés en composantes de coût pondérées.
-            Un score inférieur signifie une proposition plus alignée avec la configuration active.
-          </p>
-          <p>
-            Ce score sert surtout à comparer plusieurs propositions pour une même cohorte
-            et les mêmes paramètres. Ce n’est pas une note universelle de “qualité pédagogique”.
-          </p>
-        </aside>
-
-        <div>
-          <div class="reveal">
-            <span class="eyebrow">Optimisation</span>
-            <h2>Un moteur multi‑critères, conçu pour rendre les compromis visibles.</h2>
-            <p class="section-intro" style="margin-top: 1rem;">
-              Le moteur construit une allocation initiale, puis l’améliore par déplacements individuels
-              et échanges d’élèves. Il répète ce processus avec une variation contrôlée et conserve
-              la meilleure allocation valide.
-            </p>
-          </div>
-
-          <div class="criteria-list">
-            <article class="criterion reveal">
-              <span class="criterion-index">01</span>
-              <div>
-                <h3>Équilibres pédagogiques</h3>
-                <p>Comportement et moyennes en anglais, français et mathématiques.</p>
-              </div>
-              <span class="criterion-tag">Balance</span>
-            </article>
-
-            <article class="criterion reveal">
-              <span class="criterion-index">02</span>
-              <div>
-                <h3>Besoins de soutien</h3>
-                <p>Individual Plans, catégories de School Assistant et besoins liés aux English Plans.</p>
-              </div>
-              <span class="criterion-tag">Support</span>
-            </article>
-
-            <article class="criterion reveal">
-              <span class="criterion-index">03</span>
-              <div>
-                <h3>Relations et contraintes</h3>
-                <p>Préférences WITH, séparations WITHOUT et classes explicitement interdites.</p>
-              </div>
-              <span class="criterion-tag">Relations</span>
-            </article>
-
-            <article class="criterion reveal">
-              <span class="criterion-index">04</span>
-              <div>
-                <h3>Types de classe</h3>
-                <p>Compatibilité entre les caractéristiques des élèves et les classes MAINSTREAM, EAL ou Transition.</p>
-              </div>
-              <span class="criterion-tag">Compatibilité</span>
-            </article>
-
-            <article class="criterion reveal">
-              <span class="criterion-index">05</span>
-              <div>
-                <h3>Continuité maîtrisée</h3>
-                <p>Prévention d’une concentration excessive d’élèves issus de la même classe précédente.</p>
-              </div>
-              <span class="criterion-tag">Diversité</span>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section tech-section" id="skills">
-      <div class="shell">
-        <div class="section-head reveal">
-          <div>
-            <span class="eyebrow">Compétences mises en œuvre</span>
-            <h2>Du besoin métier à une application utilisable.</h2>
-          </div>
-          <p class="section-intro">
-            Ce projet a été mené de bout en bout : compréhension du contexte,
-            conception de l’architecture, implémentation du moteur, interface web,
-            contrôles d’intégrité, documentation et supports de présentation.
-          </p>
-        </div>
-
-        <div class="tech-grid">
-          <article class="tech-card reveal">
-            <h3>Python & data engineering</h3>
-            <p>Une chaîne robuste de traitement pour des données Excel hétérogènes.</p>
-            <ul>
-              <li>pandas et openpyxl</li>
-              <li>Normalisation des colonnes, textes, scores, dates et booléens</li>
-              <li>Modèle interne structuré pour élèves et classes</li>
-            </ul>
-          </article>
-
-          <article class="tech-card reveal">
-            <h3>Algorithmique appliquée</h3>
-            <p>Un moteur heuristique construit pour gérer des compromis réels.</p>
-            <ul>
-              <li>Fonction de coût pondérée</li>
-              <li>Construction gloutonne priorisant les cas contraints</li>
-              <li>Recherche locale par mouvements et échanges</li>
-            </ul>
-          </article>
-
-          <article class="tech-card reveal">
-            <h3>Web application design</h3>
-            <p>Une expérience simple pour des utilisateurs non techniques.</p>
-            <ul>
-              <li>Flask et interface navigateur</li>
-              <li>Configuration des classes et pondérations</li>
-              <li>Suivi de progression et téléchargement du résultat</li>
-            </ul>
-          </article>
-
-          <article class="tech-card reveal">
-            <h3>Fiabilité opérationnelle</h3>
-            <p>Des garde-fous avant toute exportation du résultat.</p>
-            <ul>
-              <li>Validation des entrées</li>
-              <li>Détection de perte ou duplication d’élèves</li>
-              <li>Vérification des contraintes explicitement interdites</li>
-            </ul>
-          </article>
-
-          <article class="tech-card reveal">
-            <h3>Observabilité</h3>
-            <p>Des traces utiles pour comprendre l’exécution et diagnostiquer un problème.</p>
-            <ul>
-              <li>Logs applicatifs</li>
-              <li>État de progression et résultat en JSON</li>
-              <li>Diagnostics sur les contraintes résolues</li>
-            </ul>
-          </article>
-
-          <article class="tech-card reveal">
-            <h3>Livraison produit</h3>
-            <p>Un travail qui inclut le produit et sa communication.</p>
-            <ul>
-              <li>Documentation technique structurée</li>
-              <li>Portfolio public sans données confidentielles</li>
-              <li>Approche auto‑entrepreneur, de la conception à la présentation</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="recruiters">
-      <div class="shell">
-        <div class="recruiter-card reveal">
-          <div>
-            <span class="eyebrow" style="color: #b5e2dd;">Pour les recruteurs AWS / DevOps</span>
-            <h2>Une base applicative prête à évoluer vers une architecture cloud plus industrialisée.</h2>
-            <p>
-              Ce projet démontre ma capacité à convertir une problématique métier complexe en application Python structurée.
-              Il reflète aussi une approche DevOps : séparation des composants, gestion de l’état, suivi de l’exécution,
-              validation et capacité à faire évoluer l’architecture.
-            </p>
-          </div>
-
-          <div class="recruiter-points">
-            <div class="recruiter-point">
-              <strong>Conteneurisation</strong>
-              <span>La webapp Flask et le moteur peuvent être empaquetés dans Docker pour une exécution reproductible.</span>
-            </div>
-            <div class="recruiter-point">
-              <strong>Évolution AWS</strong>
-              <span>Trajectoire envisagée : S3, ECS/Fargate, SQS, CloudWatch, IAM et pipeline CI/CD.</span>
-            </div>
-            <div class="recruiter-point">
-              <strong>Opérations</strong>
-              <span>Logs, progression, diagnostics et contrôles d’intégrité constituent une base pour l’observabilité.</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section contact-section" id="contact">
-      <div class="shell contact-box reveal">
-        <div>
-          <span class="eyebrow">Entrons en contact</span>
-          <h2>Un besoin edtech, Python, AWS ou DevOps ?</h2>
-          <p style="margin-top: 0.75rem; color: var(--color-muted);">
-            Je recherche actuellement des opportunités AWS DevOps Engineer en Europe,
-            tout en restant disponible pour des projets techniques à forte valeur métier.
-          </p>
-        </div>
-
-        <div class="contact-links">
-          <!-- REMPLACER LES 3 LIENS CI-DESSOUS -->
-          <a class="button button-primary" href="mailto:À_REMPLACER_EMAIL">
-            Email
-            <span aria-hidden="true">↗</span>
-          </a>
-          <a
-            class="button button-secondary"
-            href="À_REMPLACER_LINKEDIN"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            LinkedIn
-            <span aria-hidden="true">↗</span>
-          </a>
-          <a
-            class="button button-secondary"
-            href="À_REMPLACER_GITHUB_REPOSITORY"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Repository
-            <span aria-hidden="true">↗</span>
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="shell footer-content">
-      <span>© 2026 Vincent Lucas — Class Allocation Tool</span>
-      <span>Portfolio technique · Les données et le code de production ne sont pas publiés.</span>
     </div>
-  </footer>
+    <div class="wrap">
+      <div class="statline">
+        <div class="stat"><b>19</b><span data-i18n="hero.stat1">weighted criteria evaluated per allocation</span></div>
+        <div class="stat"><b>≤99</b><span data-i18n="hero.stat2">independent optimisation attempts per run</span></div>
+        <div class="stat"><b>1–9</b><span data-i18n="hero.stat3">classes configurable per cohort</span></div>
+      </div>
+    </div>
+  </section>
 
-  <script>
-    (function () {
-      const root = document.documentElement;
-      const toggle = document.querySelector("[data-theme-toggle]");
+  <!-- ================= PROBLEM ================= -->
+  <section id="problem">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-i18n="problem.h">Why manual allocation breaks down</h2>
+        <p data-i18n="problem.p">Assigning students to classes is a genuine multi-criteria decision problem. A school needs to balance academic levels, behaviour, gender distribution, language-support needs, individual learning plans, friendships and incompatibilities, and operational constraints — while still producing something school leadership can review and trust. Done by hand, it consumes real staff time and rarely produces the same result twice.</p>
+      </div>
+      <div class="tagrow">
+        <span class="tag" data-i18n="problem.tag1">Academic scores</span>
+        <span class="tag" data-i18n="problem.tag2">Behaviour</span>
+        <span class="tag" data-i18n="problem.tag3">Gender mix</span>
+        <span class="tag" data-i18n="problem.tag4">Individual learning plans</span>
+        <span class="tag" data-i18n="problem.tag5">Language support</span>
+        <span class="tag" data-i18n="problem.tag6">Friendships &amp; incompatibilities</span>
+        <span class="tag" data-i18n="problem.tag7">Previous-class continuity</span>
+      </div>
+    </div>
+  </section>
 
-      let theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-      root.setAttribute("data-theme", theme);
+  <!-- ================= SOLUTION ================= -->
+  <section id="solution" class="alt">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-i18n="solution.h">A guided, six-step workflow</h2>
+        <p data-i18n="solution.p">Built as a browser-based tool so that non-technical school staff can run it themselves — no spreadsheet macros, no manual scoring.</p>
+      </div>
+      <div class="steps">
+        <div class="step"><div><h3 data-i18n="solution.s1t">Upload the cohort spreadsheet</h3><p data-i18n="solution.s1p">Staff drop in the existing Excel export — no reformatting required.</p></div></div>
+        <div class="step"><div><h3 data-i18n="solution.s2t">Validate the detected population</h3><p data-i18n="solution.s2p">The tool previews how many students it found before anything runs.</p></div></div>
+        <div class="step"><div><h3 data-i18n="solution.s3t">Configure classes &amp; weights</h3><p data-i18n="solution.s3p">Choose the number and type of classes, and recommended or custom priorities.</p></div></div>
+        <div class="step"><div><h3 data-i18n="solution.s4t">Run the allocation</h3><p data-i18n="solution.s4p">A background worker searches for the best valid arrangement.</p></div></div>
+        <div class="step"><div><h3 data-i18n="solution.s5t">Monitor live progress</h3><p data-i18n="solution.s5p">The browser polls attempt count and best score without blocking.</p></div></div>
+        <div class="step"><div><h3 data-i18n="solution.s6t">Download the result</h3><p data-i18n="solution.s6p">A formatted Excel workbook, ready for human review and adjustment.</p></div></div>
+      </div>
+      <div class="mockup">
+        <div class="mockup-bar"><span></span><span></span><span></span></div>
+        <img src="assets/flask_welcome.png" alt="Class Allocation Tool — configuration screen" loading="lazy">
+      </div>
+    </div>
+  </section>
 
-      function renderThemeIcon() {
-        const isDark = root.getAttribute("data-theme") === "dark";
+  <!-- ================= ARCHITECTURE ================= -->
+  <section id="architecture">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-i18n="arch.h">Under the hood: a clean, layered architecture</h2>
+        <p data-i18n="arch.p">A local Flask application with clear separation between the web layer, data extraction, the optimisation engine and output generation — deliberately simple for a single-school deployment.</p>
+      </div>
 
-        toggle.setAttribute(
-          "aria-label",
-          isDark ? "Activer le mode clair" : "Activer le mode sombre"
-        );
+      <div class="diagram">
+        <div class="dlayer"><span class="name" data-i18n="arch.d1">Browser UI — Flask templates, Bootstrap, JS polling</span><span class="meta mono">HTTP</span></div>
+        <div class="dconnector"></div>
+        <div class="dlayer"><span class="name" data-i18n="arch.d2">Flask application — routes, validation, session state</span><span class="meta mono">Python</span></div>
+        <div class="dconnector"></div>
+        <div class="dsplit">
+          <div class="dlayer"><span class="name" data-i18n="arch.d3a">Extraction layer — pandas / openpyxl</span></div>
+          <div class="dlayer"><span class="name" data-i18n="arch.d3b">Background worker — allocation engine</span></div>
+        </div>
+        <div class="dconnector"></div>
+        <div class="dlayer"><span class="name" data-i18n="arch.d4">Filesystem state — params · progress · result · stop</span><span class="meta mono">JSON</span></div>
+        <div class="dconnector"></div>
+        <div class="dlayer"><span class="name" data-i18n="arch.d5">Excel output — stats sheet + one sheet per class</span><span class="meta mono">.xlsx</span></div>
+      </div>
+      <p class="diagram-note" data-i18n="arch.note">A filesystem-based state layer keeps the installation simple for a single school. For a multi-tenant version, this is exactly the layer I'd replace first — with a managed database, job queue and container-based deployment, which is the direction my current cloud infrastructure work is taking me.</p>
 
-        toggle.innerHTML = isDark
-          ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path></svg>'
-          : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>';
+      <div class="codecard">
+        <span class="filename" data-i18n="arch.codelabel">extraction.py — score validation (excerpt, anonymised)</span>
+        <pre><span class="tok-kw">def</span> <span class="tok-fn">clean_score</span>(x) -&gt; <span class="tok-type">Optional[int]</span>:
+    <span class="tok-str">"""Convert a cell to an integer score between 1 and 5.
+
+    Returns an int in [1,5], or None if the cell is empty.
+    Raises ValueError if the parsed number is out of range —
+    invalid scores must never enter the optimiser silently.
+    """</span>
+    <span class="tok-kw">if</span> pd.isna(x):
+        <span class="tok-kw">return</span> <span class="tok-kw">None</span>
+    <span class="tok-kw">try</span>:
+        value = <span class="tok-fn">int</span>(<span class="tok-fn">float</span>(x))
+    <span class="tok-kw">except</span> (ValueError, TypeError):
+        <span class="tok-kw">return</span> <span class="tok-kw">None</span>
+
+    <span class="tok-kw">if</span> value &lt; 1 <span class="tok-kw">or</span> value &gt; 5:
+        <span class="tok-kw">raise</span> <span class="tok-fn">ValueError</span>(<span class="tok-str">f"Invalid score: {x}"</span>)
+    <span class="tok-kw">return</span> value</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= ALGORITHM ================= -->
+  <section id="algorithm" class="alt">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-i18n="algo.h">A weighted, multi-criteria local search</h2>
+        <p data-i18n="algo.p">Every candidate allocation is scored by a single cost function — a weighted sum of penalties across 19 criteria. Lower is better; there is no single “correct” answer, only better and worse trade-offs.</p>
+      </div>
+
+      <div class="flowmini">
+        <span class="fnode" data-i18n="algo.f1">Order by placement difficulty</span><span class="farrow">→</span>
+        <span class="fnode" data-i18n="algo.f2">Greedy construction</span><span class="farrow">→</span>
+        <span class="fnode" data-i18n="algo.f3">Local search: moves</span><span class="farrow">→</span>
+        <span class="fnode" data-i18n="algo.f4">Local search: swaps</span><span class="farrow">→</span>
+        <span class="fnode" data-i18n="algo.f5">Score &amp; keep best of N</span>
+      </div>
+
+      <div class="formulas">
+        <div class="formula">
+          <div class="flabel" data-i18n="algo.form1l">Mean-based balance (behaviour, academic scores)</div>
+          <div class="fexpr">C = w · (m<sub>k</sub> − m*)²</div>
+        </div>
+        <div class="formula">
+          <div class="flabel" data-i18n="algo.form2l">Proportion-based balance (gender, learning plans)</div>
+          <div class="fexpr">C = w · (p<sub>k</sub> − p*)²</div>
+        </div>
+        <div class="formula">
+          <div class="flabel" data-i18n="algo.form3l">Count-based dispersion (EAL, new students)</div>
+          <div class="fexpr">C = w · (n<sub>k</sub> − n*)²</div>
+        </div>
+      </div>
+
+      <table class="weights">
+        <thead><tr><th data-i18n="algo.thc">Criterion</th><th data-i18n="algo.thw">Weight</th><th data-i18n="algo.thi">What it protects</th></tr></thead>
+        <tbody>
+          <tr><td class="name" data-i18n="algo.w1n">Behaviour balance</td><td class="w mono">2.0</td><td data-i18n="algo.w1i">Even mean behaviour score across classes<div class="bar" style="width:26%"></div></td></tr>
+          <tr><td class="name" data-i18n="algo.w2n">Individual learning plans</td><td class="w mono">4.0</td><td data-i18n="algo.w2i">Even share of students with a support plan<div class="bar" style="width:53%"></div></td></tr>
+          <tr><td class="name" data-i18n="algo.w3n">EAL distribution</td><td class="w mono">2.0</td><td data-i18n="algo.w3i">Language-support students spread across EAL classes<div class="bar" style="width:26%"></div></td></tr>
+          <tr><td class="name" data-i18n="algo.w4n">No requested friend placed</td><td class="w mono">8.0</td><td data-i18n="algo.w4i">Penalises leaving a student with none of their requests<div class="bar" style="width:100%"></div></td></tr>
+          <tr><td class="name" data-i18n="algo.w5n">Strong gender imbalance</td><td class="w mono">8.0</td><td data-i18n="algo.w5i">Penalty grows once either gender drops below 35%<div class="bar" style="width:100%"></div></td></tr>
+          <tr><td class="name" data-i18n="algo.w6n">Incompatible pair together</td><td class="w mono">12.0</td><td data-i18n="algo.w6i">Strongly discourages placing flagged pairs together<div class="bar" style="width:80%"></div></td></tr>
+          <tr><td class="name" data-i18n="algo.w7n">Forbidden-class placement</td><td class="w mono">15.0</td><td data-i18n="algo.w7i">The single strongest penalty — a hard rule in practice<div class="bar" style="width:100%"></div></td></tr>
+          <tr><td class="name" data-i18n="algo.w8n">Previous-class dominance</td><td class="w mono">6.0</td><td data-i18n="algo.w8i">Stops a class from being a near-copy of last year's group<div class="bar" style="width:40%"></div></td></tr>
+        </tbody>
+      </table>
+      <p class="weights-note" data-i18n="algo.wnote">Shown: 8 of 19 configurable criteria, each adjustable from 0 to 20 in steps of 0.5. Weights are relative coefficients, not probabilities — a higher weight increases influence, it does not guarantee the criterion is fully satisfied.</p>
+    </div>
+  </section>
+
+  <!-- ================= SKILLS ================= -->
+  <section id="skills">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-i18n="skills.h">What building this proved</h2>
+        <p data-i18n="skills.p">This project was scoped, built, deployed and supported end-to-end, solo, as an independent (auto-entrepreneur) engineer — directly for a school that needed a working tool, not a prototype.</p>
+      </div>
+      <div class="skillcols">
+        <div class="skillcol">
+          <h3 data-i18n="skills.c1h">Backend &amp; data engineering</h3>
+          <ul>
+            <li data-i18n="skills.c1i1">Python, Flask, background worker threads</li>
+            <li data-i18n="skills.c1i2">Robust Excel ingestion with pandas &amp; openpyxl</li>
+            <li data-i18n="skills.c1i3">Input validation that fails loudly, never silently</li>
+            <li data-i18n="skills.c1i4">Structured logging &amp; JSON-based state management</li>
+            <li data-i18n="skills.c1i5">Bilingual (FR/EN) interface from the same codebase</li>
+          </ul>
+        </div>
+        <div class="skillcol">
+          <h3 data-i18n="skills.c2h">Algorithms &amp; systems design</h3>
+          <ul>
+            <li data-i18n="skills.c2i1">Multi-criteria weighted cost-function design</li>
+            <li data-i18n="skills.c2i2">Greedy construction + local-search heuristics</li>
+            <li data-i18n="skills.c2i3">Layered architecture: extraction / allocation / output</li>
+            <li data-i18n="skills.c2i4">Integrity checks that run before every export</li>
+            <li data-i18n="skills.c2i5">Designing for a non-expert end user, not a power user</li>
+          </ul>
+        </div>
+        <div class="skillcol">
+          <h3 data-i18n="skills.c3h">Delivering solo, for a real client</h3>
+          <ul>
+            <li data-i18n="skills.c3i1">Requirements gathered directly from school staff</li>
+            <li data-i18n="skills.c3i2">Full ownership: scoping, build, delivery, support</li>
+            <li data-i18n="skills.c3i3">Documentation written for handover, not just for me</li>
+            <li data-i18n="skills.c3i4">Packaging a technical tool for non-technical hands</li>
+            <li data-i18n="skills.c3i5">Comfortable owning a project with no team to fall back on</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CLOUD ================= -->
+  <section id="cloud" class="alt">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-i18n="cloud.h">Where this is heading: cloud &amp; DevOps</h2>
+        <p data-i18n="cloud.p">This tool was built and deployed locally by design — a small, single-school footprint. The same discipline — clear architecture, validation at every boundary, automation-minded thinking — is what I'm now bringing to cloud infrastructure.</p>
+      </div>
+      <div class="cloudrow">
+        <div class="cert-badge">
+          <span class="dot"></span>
+          <div>
+            <div class="ctitle" data-i18n="cloud.certtitle">AWS Certified Solutions Architect – Associate (SAA-C03)</div>
+            <div class="cstatus" data-i18n="cloud.certstatus">In preparation — targeting October 2026</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CONTACT ================= -->
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 data-i18n="contact.h">Let's talk</h2>
+        <p data-i18n="contact.p">Whether you're evaluating this for your own school, or evaluating me for your team — here's how to reach me.</p>
+      </div>
+      <div class="ccols">
+        <div class="ccard" id="cardSchool">
+          <h3 data-i18n="contact.schoolH">For schools &amp; education teams</h3>
+          <p data-i18n="contact.schoolP">Looking to bring structured, transparent class allocation to your school? I can adapt this engine to your own criteria, Excel format and constraints.</p>
+          <div class="btnrow">
+            <a class="btn btn-primary" href="mailto:vincentselucas@gmail.com?subject=Class%20Allocation%20Tool%20%E2%80%94%20project%20inquiry" data-i18n="contact.schoolBtn">Email about a project</a>
+          </div>
+        </div>
+        <div class="ccard" id="cardRecruit">
+          <h3 data-i18n="contact.hireH">For hiring teams</h3>
+          <p data-i18n="contact.hireP">I'm currently looking for an AWS DevOps Engineer role in Europe, with cloud certification in progress. Happy to talk infrastructure, automation, or the engineering decisions behind this project.</p>
+          <div class="btnrow">
+            <a class="btn btn-primary" href="mailto:vincentselucas@gmail.com?subject=AWS%20DevOps%20Engineer%20%E2%80%94%20opportunity" data-i18n="contact.hireBtn1">Email me</a>
+            <a class="btn btn-ghost" href="https://www.linkedin.com/in/vincent-lucas-483b29295/" target="_blank" rel="noopener" data-i18n="contact.hireBtn2">View LinkedIn</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap footer-inner">
+    <span data-i18n="footer.copy">© 2026 Vincent Lucas</span>
+    <div class="footer-links">
+      <a href="https://github.com/REPLACE_WITH_YOUR_USERNAME/class-allocation-tool" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/vincent-lucas-483b29295/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="mailto:vincentselucas@gmail.com">Email</a>
+    </div>
+  </div>
+  <p class="fineprint" data-i18n="footer.fine">Portfolio case study. Original production source code and school data are proprietary and not included in the public repository.</p>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------------- i18n ---------------- */
+  var i18n = {
+    en: {
+      "nav.problem":"The problem","nav.solution":"The solution","nav.architecture":"How it works","nav.algorithm":"The algorithm","nav.skills":"Skills","nav.contact":"Contact",
+      "hero.kicker":"A software case study",
+      "hero.title":"Turning one chaotic class list into balanced classrooms.",
+      "hero.sub":"A weighted, multi-criteria allocation engine that assigns every student to a class in minutes — balancing academic levels, behaviour, gender, language support and friendships at once. Designed, built and shipped end-to-end as an independent engineer.",
+      "hero.ctaSchool":"I need this for a school",
+      "hero.ctaHire":"I'm hiring for cloud &amp; DevOps",
+      "hero.readoutAttemptLabel":"Attempt",
+      "hero.readoutOfLabel":"of",
+      "hero.readoutCostLabel":"Best cost",
+      "hero.stat1":"weighted criteria evaluated per allocation",
+      "hero.stat2":"independent optimisation attempts per run",
+      "hero.stat3":"classes configurable per cohort",
+      "problem.h":"Why manual allocation breaks down",
+      "problem.p":"Assigning students to classes is a genuine multi-criteria decision problem. A school needs to balance academic levels, behaviour, gender distribution, language-support needs, individual learning plans, friendships and incompatibilities, and operational constraints — while still producing something school leadership can review and trust. Done by hand, it consumes real staff time and rarely produces the same result twice.",
+      "problem.tag1":"Academic scores","problem.tag2":"Behaviour","problem.tag3":"Gender mix","problem.tag4":"Individual learning plans","problem.tag5":"Language support","problem.tag6":"Friendships &amp; incompatibilities","problem.tag7":"Previous-class continuity",
+      "solution.h":"A guided, six-step workflow",
+      "solution.p":"Built as a browser-based tool so that non-technical school staff can run it themselves — no spreadsheet macros, no manual scoring.",
+      "solution.s1t":"Upload the cohort spreadsheet","solution.s1p":"Staff drop in the existing Excel export — no reformatting required.",
+      "solution.s2t":"Validate the detected population","solution.s2p":"The tool previews how many students it found before anything runs.",
+      "solution.s3t":"Configure classes &amp; weights","solution.s3p":"Choose the number and type of classes, and recommended or custom priorities.",
+      "solution.s4t":"Run the allocation","solution.s4p":"A background worker searches for the best valid arrangement.",
+      "solution.s5t":"Monitor live progress","solution.s5p":"The browser polls attempt count and best score without blocking.",
+      "solution.s6t":"Download the result","solution.s6p":"A formatted Excel workbook, ready for human review and adjustment.",
+      "arch.h":"Under the hood: a clean, layered architecture",
+      "arch.p":"A local Flask application with clear separation between the web layer, data extraction, the optimisation engine and output generation — deliberately simple for a single-school deployment.",
+      "arch.d1":"Browser UI — Flask templates, Bootstrap, JS polling",
+      "arch.d2":"Flask application — routes, validation, session state",
+      "arch.d3a":"Extraction layer — pandas / openpyxl",
+      "arch.d3b":"Background worker — allocation engine",
+      "arch.d4":"Filesystem state — params · progress · result · stop",
+      "arch.d5":"Excel output — stats sheet + one sheet per class",
+      "arch.note":"A filesystem-based state layer keeps the installation simple for a single school. For a multi-tenant version, this is exactly the layer I'd replace first — with a managed database, job queue and container-based deployment, which is the direction my current cloud infrastructure work is taking me.",
+      "arch.codelabel":"extraction.py — score validation (excerpt, anonymised)",
+      "algo.h":"A weighted, multi-criteria local search",
+      "algo.p":"Every candidate allocation is scored by a single cost function — a weighted sum of penalties across 19 criteria. Lower is better; there is no single “correct” answer, only better and worse trade-offs.",
+      "algo.f1":"Order by placement difficulty","algo.f2":"Greedy construction","algo.f3":"Local search: moves","algo.f4":"Local search: swaps","algo.f5":"Score &amp; keep best of N",
+      "algo.form1l":"Mean-based balance (behaviour, academic scores)",
+      "algo.form2l":"Proportion-based balance (gender, learning plans)",
+      "algo.form3l":"Count-based dispersion (EAL, new students)",
+      "algo.thc":"Criterion","algo.thw":"Weight","algo.thi":"What it protects",
+      "algo.w1n":"Behaviour balance","algo.w1i":"Even mean behaviour score across classes",
+      "algo.w2n":"Individual learning plans","algo.w2i":"Even share of students with a support plan",
+      "algo.w3n":"EAL distribution","algo.w3i":"Language-support students spread across EAL classes",
+      "algo.w4n":"No requested friend placed","algo.w4i":"Penalises leaving a student with none of their requests",
+      "algo.w5n":"Strong gender imbalance","algo.w5i":"Penalty grows once either gender drops below 35%",
+      "algo.w6n":"Incompatible pair together","algo.w6i":"Strongly discourages placing flagged pairs together",
+      "algo.w7n":"Forbidden-class placement","algo.w7i":"The single strongest penalty — a hard rule in practice",
+      "algo.w8n":"Previous-class dominance","algo.w8i":"Stops a class from being a near-copy of last year's group",
+      "algo.wnote":"Shown: 8 of 19 configurable criteria, each adjustable from 0 to 20 in steps of 0.5. Weights are relative coefficients, not probabilities — a higher weight increases influence, it does not guarantee the criterion is fully satisfied.",
+      "skills.h":"What building this proved",
+      "skills.p":"This project was scoped, built, deployed and supported end-to-end, solo, as an independent (auto-entrepreneur) engineer — directly for a school that needed a working tool, not a prototype.",
+      "skills.c1h":"Backend &amp; data engineering",
+      "skills.c1i1":"Python, Flask, background worker threads",
+      "skills.c1i2":"Robust Excel ingestion with pandas &amp; openpyxl",
+      "skills.c1i3":"Input validation that fails loudly, never silently",
+      "skills.c1i4":"Structured logging &amp; JSON-based state management",
+      "skills.c1i5":"Bilingual (FR/EN) interface from the same codebase",
+      "skills.c2h":"Algorithms &amp; systems design",
+      "skills.c2i1":"Multi-criteria weighted cost-function design",
+      "skills.c2i2":"Greedy construction + local-search heuristics",
+      "skills.c2i3":"Layered architecture: extraction / allocation / output",
+      "skills.c2i4":"Integrity checks that run before every export",
+      "skills.c2i5":"Designing for a non-expert end user, not a power user",
+      "skills.c3h":"Delivering solo, for a real client",
+      "skills.c3i1":"Requirements gathered directly from school staff",
+      "skills.c3i2":"Full ownership: scoping, build, delivery, support",
+      "skills.c3i3":"Documentation written for handover, not just for me",
+      "skills.c3i4":"Packaging a technical tool for non-technical hands",
+      "skills.c3i5":"Comfortable owning a project with no team to fall back on",
+      "cloud.h":"Where this is heading: cloud &amp; DevOps",
+      "cloud.p":"This tool was built and deployed locally by design — a small, single-school footprint. The same discipline — clear architecture, validation at every boundary, automation-minded thinking — is what I'm now bringing to cloud infrastructure.",
+      "cloud.certtitle":"AWS Certified Solutions Architect – Associate (SAA-C03)",
+      "cloud.certstatus":"In preparation — targeting October 2026",
+      "contact.h":"Let's talk",
+      "contact.p":"Whether you're evaluating this for your own school, or evaluating me for your team — here's how to reach me.",
+      "contact.schoolH":"For schools &amp; education teams",
+      "contact.schoolP":"Looking to bring structured, transparent class allocation to your school? I can adapt this engine to your own criteria, Excel format and constraints.",
+      "contact.schoolBtn":"Email about a project",
+      "contact.hireH":"For hiring teams",
+      "contact.hireP":"I'm currently looking for an AWS DevOps Engineer role in Europe, with cloud certification in progress. Happy to talk infrastructure, automation, or the engineering decisions behind this project.",
+      "contact.hireBtn1":"Email me","contact.hireBtn2":"View LinkedIn",
+      "footer.copy":"© 2026 Vincent Lucas",
+      "footer.fine":"Portfolio case study. Original production source code and school data are proprietary and not included in the public repository."
+    },
+    fr: {
+      "nav.problem":"Le problème","nav.solution":"La solution","nav.architecture":"Fonctionnement","nav.algorithm":"L'algorithme","nav.skills":"Compétences","nav.contact":"Contact",
+      "hero.kicker":"Une étude de cas technique",
+      "hero.title":"Transformer une liste d'élèves désordonnée en classes équilibrées.",
+      "hero.sub":"Un moteur de répartition multicritère et pondéré qui affecte chaque élève à une classe en quelques minutes — en équilibrant niveaux scolaires, comportement, mixité, soutien linguistique et relations amicales à la fois. Conçu, développé et livré de bout en bout en tant qu'indépendant.",
+      "hero.ctaSchool":"J'en ai besoin pour une école",
+      "hero.ctaHire":"Je recrute en cloud &amp; DevOps",
+      "hero.readoutAttemptLabel":"Tentative",
+      "hero.readoutOfLabel":"sur",
+      "hero.readoutCostLabel":"Meilleur coût",
+      "hero.stat1":"critères pondérés évalués par répartition",
+      "hero.stat2":"tentatives d'optimisation indépendantes par lancement",
+      "hero.stat3":"classes configurables par cohorte",
+      "problem.h":"Pourquoi la répartition manuelle atteint ses limites",
+      "problem.p":"Répartir des élèves en classes est un véritable problème de décision multicritère. Une école doit équilibrer niveaux scolaires, comportement, mixité, besoins de soutien linguistique, plans d'accompagnement individuels, amitiés et incompatibilités, ainsi que des contraintes opérationnelles — tout en produisant un résultat que la direction peut examiner et valider. Fait à la main, cela consomme un temps réel pour les équipes et donne rarement le même résultat deux fois.",
+      "problem.tag1":"Niveaux scolaires","problem.tag2":"Comportement","problem.tag3":"Mixité","problem.tag4":"Plans d'accompagnement individuels","problem.tag5":"Soutien linguistique","problem.tag6":"Amitiés &amp; incompatibilités","problem.tag7":"Continuité avec la classe précédente",
+      "solution.h":"Un parcours guidé en six étapes",
+      "solution.p":"Conçu comme un outil accessible depuis un navigateur, pour que le personnel scolaire puisse l'utiliser seul — sans macro Excel, sans notation manuelle.",
+      "solution.s1t":"Importer le fichier de la cohorte","solution.s1p":"L'équipe dépose l'export Excel existant — aucune mise en forme préalable requise.",
+      "solution.s2t":"Valider la population détectée","solution.s2p":"L'outil affiche le nombre d'élèves détectés avant tout traitement.",
+      "solution.s3t":"Configurer classes &amp; pondérations","solution.s3p":"Choisir le nombre et le type de classes, et des priorités recommandées ou personnalisées.",
+      "solution.s4t":"Lancer la répartition","solution.s4p":"Un traitement en arrière-plan recherche la meilleure disposition valide.",
+      "solution.s5t":"Suivre la progression en direct","solution.s5p":"Le navigateur interroge régulièrement le nombre de tentatives et le meilleur score, sans blocage.",
+      "solution.s6t":"Télécharger le résultat","solution.s6p":"Un classeur Excel formaté, prêt pour la relecture humaine et les ajustements.",
+      "arch.h":"Sous le capot : une architecture en couches claire",
+      "arch.p":"Une application Flask locale avec une séparation nette entre la couche web, l'extraction des données, le moteur d'optimisation et la génération de sortie — volontairement simple pour un déploiement mono-établissement.",
+      "arch.d1":"Interface navigateur — templates Flask, Bootstrap, sondage JS",
+      "arch.d2":"Application Flask — routes, validation, état de session",
+      "arch.d3a":"Couche d'extraction — pandas / openpyxl",
+      "arch.d3b":"Traitement en arrière-plan — moteur de répartition",
+      "arch.d4":"État sur système de fichiers — paramètres · progression · résultat · arrêt",
+      "arch.d5":"Sortie Excel — feuille de statistiques + une feuille par classe",
+      "arch.note":"Un état basé sur le système de fichiers garde l'installation simple pour une seule école. Pour une version multi-établissements, c'est justement la couche que je remplacerais en premier — par une base de données managée, une file de tâches et un déploiement conteneurisé : la direction vers laquelle m'amène mon travail actuel en infrastructure cloud.",
+      "arch.codelabel":"extraction.py — validation d'un score (extrait, anonymisé)",
+      "algo.h":"Une recherche locale multicritère et pondérée",
+      "algo.p":"Chaque répartition candidate est notée par une seule fonction de coût — une somme pondérée de pénalités sur 19 critères. Plus c'est bas, mieux c'est ; il n'existe pas de réponse « correcte » unique, seulement des compromis meilleurs ou moins bons.",
+      "algo.f1":"Tri par difficulté de placement","algo.f2":"Construction gloutonne","algo.f3":"Recherche locale : déplacements","algo.f4":"Recherche locale : échanges","algo.f5":"Score &amp; meilleure tentative sur N",
+      "algo.form1l":"Équilibre par moyenne (comportement, niveaux scolaires)",
+      "algo.form2l":"Équilibre par proportion (mixité, plans d'accompagnement)",
+      "algo.form3l":"Dispersion par effectif (EAL, nouveaux élèves)",
+      "algo.thc":"Critère","algo.thw":"Poids","algo.thi":"Ce qu'il protège",
+      "algo.w1n":"Équilibre du comportement","algo.w1i":"Moyenne de comportement homogène entre classes",
+      "algo.w2n":"Plans d'accompagnement individuels","algo.w2i":"Part homogène d'élèves avec un plan de soutien",
+      "algo.w3n":"Répartition EAL","algo.w3i":"Élèves en soutien linguistique répartis entre classes EAL",
+      "algo.w4n":"Aucun camarade demandé placé","algo.w4i":"Pénalise le fait de laisser un élève sans aucune de ses demandes",
+      "algo.w5n":"Mixité fortement déséquilibrée","algo.w5i":"La pénalité augmente sous 35% pour l'un des deux genres",
+      "algo.w6n":"Paire incompatible réunie","algo.w6i":"Décourage fortement de réunir des paires signalées",
+      "algo.w7n":"Placement en classe interdite","algo.w7i":"La pénalité la plus forte — une règle quasi absolue en pratique",
+      "algo.w8n":"Dominance de l'ancienne classe","algo.w8i":"Empêche qu'une classe soit une quasi-copie de l'année précédente",
+      "algo.wnote":"Affichés : 8 des 19 critères configurables, chacun réglable de 0 à 20 par pas de 0,5. Les poids sont des coefficients relatifs, pas des probabilités — un poids plus élevé augmente l'influence, sans garantir la satisfaction totale du critère.",
+      "skills.h":"Ce que ce projet démontre",
+      "skills.p":"Ce projet a été cadré, développé, déployé et maintenu de bout en bout, seul, en tant qu'indépendant (auto-entrepreneur) — directement pour une école ayant besoin d'un outil fonctionnel, pas d'un prototype.",
+      "skills.c1h":"Backend &amp; ingénierie des données",
+      "skills.c1i1":"Python, Flask, traitement en arrière-plan (threads)",
+      "skills.c1i2":"Import Excel robuste avec pandas &amp; openpyxl",
+      "skills.c1i3":"Validation des entrées qui échoue explicitement, jamais en silence",
+      "skills.c1i4":"Journalisation structurée &amp; état géré via JSON",
+      "skills.c1i5":"Interface bilingue (FR/EN) à partir d'une seule base de code",
+      "skills.c2h":"Algorithmes &amp; conception système",
+      "skills.c2i1":"Conception d'une fonction de coût multicritère pondérée",
+      "skills.c2i2":"Construction gloutonne + heuristiques de recherche locale",
+      "skills.c2i3":"Architecture en couches : extraction / répartition / sortie",
+      "skills.c2i4":"Contrôles d'intégrité exécutés avant chaque export",
+      "skills.c2i5":"Conception pensée pour un utilisateur non expert",
+      "skills.c3h":"Livrer seul, pour un client réel",
+      "skills.c3i1":"Recueil des besoins directement auprès de l'équipe scolaire",
+      "skills.c3i2":"Responsabilité complète : cadrage, développement, livraison, support",
+      "skills.c3i3":"Documentation rédigée pour la transmission, pas seulement pour moi",
+      "skills.c3i4":"Packaging d'un outil technique pour des mains non techniques",
+      "skills.c3i5":"À l'aise pour porter un projet seul, sans équipe derrière",
+      "cloud.h":"Prochaine étape : cloud &amp; DevOps",
+      "cloud.p":"Cet outil a été conçu et déployé localement, volontairement — une empreinte réduite, mono-établissement. La même rigueur — architecture claire, validation à chaque étape, réflexe d'automatisation — est ce que j'apporte aujourd'hui à l'infrastructure cloud.",
+      "cloud.certtitle":"AWS Certified Solutions Architect – Associate (SAA-C03)",
+      "cloud.certstatus":"En préparation — visée pour octobre 2026",
+      "contact.h":"Discutons",
+      "contact.p":"Que vous évaluiez cet outil pour votre propre école, ou que vous m'évaluiez pour votre équipe — voici comment me contacter.",
+      "contact.schoolH":"Établissements &amp; équipes pédagogiques",
+      "contact.schoolP":"Vous souhaitez apporter une répartition des classes structurée et transparente à votre école ? Je peux adapter ce moteur à vos propres critères, votre format Excel et vos contraintes.",
+      "contact.schoolBtn":"Écrire à propos d'un projet",
+      "contact.hireH":"Équipes de recrutement",
+      "contact.hireP":"Je recherche actuellement un poste d'AWS DevOps Engineer en Europe, avec une certification cloud en préparation. Avec plaisir pour échanger sur l'infrastructure, l'automatisation, ou les choix techniques de ce projet.",
+      "contact.hireBtn1":"M'écrire","contact.hireBtn2":"Voir mon LinkedIn",
+      "footer.copy":"© 2026 Vincent Lucas",
+      "footer.fine":"Étude de cas de portfolio. Le code source de production original et les données scolaires sont propriétaires et ne sont pas inclus dans le dépôt public."
+    }
+  };
+
+  function applyLang(lang){
+    document.documentElement.lang = lang;
+    document.documentElement.dataset.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(function(el){
+      var key = el.getAttribute('data-i18n');
+      var val = i18n[lang] && i18n[lang][key];
+      if (val !== undefined) el.innerHTML = val;
+    });
+    document.querySelectorAll('.lang-toggle button').forEach(function(b){
+      b.classList.toggle('active', b.dataset.setLang === lang);
+    });
+    try { localStorage.setItem('cat_lang', lang); } catch(e){}
+  }
+
+  document.querySelectorAll('.lang-toggle button').forEach(function(b){
+    b.addEventListener('click', function(){ applyLang(b.dataset.setLang); });
+  });
+
+  var startLang = 'en';
+  try {
+    var saved = localStorage.getItem('cat_lang');
+    if (saved === 'fr' || saved === 'en') startLang = saved;
+    else if ((navigator.language||'').toLowerCase().indexOf('fr') === 0) startLang = 'fr';
+  } catch(e){}
+  applyLang(startLang);
+
+  /* ---------------- mobile nav ---------------- */
+  var burger = document.getElementById('navburger');
+  var navlinks = document.getElementById('navlinks');
+  burger.addEventListener('click', function(){
+    var open = navlinks.classList.toggle('open');
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  navlinks.querySelectorAll('a').forEach(function(a){
+    a.addEventListener('click', function(){ navlinks.classList.remove('open'); });
+  });
+
+  /* ---------------- audience-aware CTA pulse ---------------- */
+  document.querySelectorAll('[data-audience]').forEach(function(a){
+    a.addEventListener('click', function(){
+      var target = a.dataset.audience === 'school' ? 'cardSchool' : 'cardRecruit';
+      var card = document.getElementById(target);
+      if (!card) return;
+      card.classList.add('pulse');
+      setTimeout(function(){ card.classList.remove('pulse'); }, 2200);
+    });
+  });
+
+  /* ---------------- hero canvas: sorting visualisation ---------------- */
+  var canvas = document.getElementById('heroCanvas');
+  var ctx = canvas.getContext('2d');
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var DPR = Math.min(window.devicePixelRatio || 1, 2);
+  var W, H;
+  function resize(){
+    var rect = canvas.getBoundingClientRect();
+    W = rect.width; H = rect.height;
+    canvas.width = W * DPR; canvas.height = H * DPR;
+    ctx.setTransform(DPR,0,0,DPR,0,0);
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  var GROUP_COLORS = ['#2F9E6E', '#D9A62E', '#5B8DEF'];
+  var N = 42, GROUPS = 3;
+  var dots = [];
+  for (var i=0;i<N;i++){
+    dots.push({
+      x: Math.random()*100, y: Math.random()*100,
+      sx:0, sy:0, tx:0, ty:0,
+      group: i % GROUPS,
+      r: 3.1 + Math.random()*1.1
+    });
+  }
+
+  function scatterTargets(){
+    dots.forEach(function(d){
+      d.sx = d.x; d.sy = d.y;
+      d.tx = 46 + Math.random()*8; d.ty = 46 + Math.random()*8; // converge near centre, jumbled
+    });
+  }
+  function groupTargets(){
+    var cols = 3;
+    var seen = {};
+    var centers = [[24,28],[76,28],[50,78]];
+    dots.forEach(function(d){
+      seen[d.group] = (seen[d.group]||0);
+      var idx = seen[d.group]++;
+      var c = centers[d.group % centers.length];
+      var gx = idx % cols, gy = Math.floor(idx / cols);
+      d.sx = d.x; d.sy = d.y;
+      d.tx = c[0] + (gx-1)*7.5;
+      d.ty = c[1] + (gy-1.4)*7.5;
+    });
+  }
+
+  var phase = 0; // 0 = scattered->grouped animating, 1 = holding grouped, 2 = grouped->scattered, 3 = holding scattered
+  var t0 = performance.now();
+  var DUR_ANIM = 2400, DUR_HOLD = 2600;
+  var attempt = 1, maxAttempt = 40, cost = 812.0;
+
+  groupTargets();
+  dots.forEach(function(d){ d.x = d.sx = d.tx; d.y = d.sy = d.ty; }); // start grouped, calmly
+
+  function easeInOutCubic(t){ return t<0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+
+  function step(now){
+    var dt = now - t0;
+
+    if (phase === 0){ // scattered -> grouped
+      var p = Math.min(dt / DUR_ANIM, 1);
+      var e = easeInOutCubic(p);
+      dots.forEach(function(d){ d.x = d.sx + (d.tx-d.sx)*e; d.y = d.sy + (d.ty-d.sy)*e; });
+      if (p >= 1){ phase = 1; t0 = now;
+        cost = Math.max(60, cost - (40 + Math.random()*70));
+        attempt = Math.min(maxAttempt, attempt + Math.ceil(Math.random()*4));
+        updateReadout();
       }
-
-      renderThemeIcon();
-
-      toggle.addEventListener("click", function () {
-        theme = root.getAttribute("data-theme") === "dark" ? "light" : "dark";
-        root.setAttribute("data-theme", theme);
-        renderThemeIcon();
-      });
-
-      const revealItems = document.querySelectorAll(".reveal");
-
-      if ("IntersectionObserver" in window) {
-        const observer = new IntersectionObserver(
-          function (entries) {
-            entries.forEach(function (entry) {
-              if (entry.isIntersecting) {
-                entry.target.classList.add("is-visible");
-                observer.unobserve(entry.target);
-              }
-            });
-          },
-          { threshold: 0.12 }
-        );
-
-        revealItems.forEach(function (item) {
-          observer.observe(item);
-        });
-      } else {
-        revealItems.forEach(function (item) {
-          item.classList.add("is-visible");
-        });
+    } else if (phase === 1){ // hold grouped
+      if (dt >= DUR_HOLD){ phase = 2; t0 = now; scatterTargets(); }
+    } else if (phase === 2){ // grouped -> scattered
+      var p2 = Math.min(dt / (DUR_ANIM*0.7), 1);
+      var e2 = easeInOutCubic(p2);
+      dots.forEach(function(d){ d.x = d.sx + (d.tx-d.sx)*e2; d.y = d.sy + (d.ty-d.sy)*e2; });
+      if (p2 >= 1){ phase = 3; t0 = now;
+        dots.forEach(function(d){ d.group = Math.floor(Math.random()*GROUPS); });
+        groupTargets();
       }
-    })();
-  </script>
+    } else if (phase === 3){ // brief hold scattered, then restart cycle
+      if (dt >= 500){ phase = 0; t0 = now; }
+    }
+
+    draw();
+    if (!reduceMotion) requestAnimationFrame(step);
+  }
+
+  function updateReadout(){
+    var a = document.getElementById('rdAttempt');
+    var m = document.getElementById('rdMax');
+    var c = document.getElementById('rdCost');
+    if (a) a.textContent = attempt;
+    if (m) m.textContent = maxAttempt;
+    if (c) c.textContent = cost.toFixed(1);
+    if (attempt >= maxAttempt){ attempt = 1; cost = 812.0; }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    dots.forEach(function(d){
+      var px = d.x/100*W, py = d.y/100*H;
+      ctx.beginPath();
+      ctx.fillStyle = phase >= 2 ? 'rgba(245,247,251,0.55)' : GROUP_COLORS[d.group];
+      ctx.globalAlpha = phase >= 2 ? 0.55 : 0.92;
+      ctx.arc(px, py, d.r*(Math.min(W,H)/220), 0, Math.PI*2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  }
+
+  if (reduceMotion){
+    draw();
+    updateReadout();
+  } else {
+    updateReadout();
+    requestAnimationFrame(step);
+  }
+})();
+</script>
 </body>
 </html>
