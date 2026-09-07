@@ -32,16 +32,16 @@ to ensure data protection and resilience.
 
 ## Product walkthrough
 
-Class Allocation GUI :
+### Class Allocation GUI :
 ![Configuration screen](demo/flask_welcome.png)
 
-Video Walkthrough on making a class allocation :
+### Video Walkthrough on making a class allocation :
 ![Configuration demo](demo/flask_test.mp4)
 
-Example of input :
+### Example of input :
 ![Table input template](demo/input_table_example.png)
 
-Example of output :
+### Example of output of a completed input:
 ![Table input template](demo/output_example_1.png)
 ![Table input template](demo/output_example_2.png)
 
