@@ -1,4 +1,5 @@
-### (Portfolio : [https://vinsl.github.io/class-allocation-tool/](...))
+<a href="https://vinsl.github.io/class-allocation-tool/" target="_blank">Portfolio</a>
+
 
 # Class Allocation Tool
 A school class-allocation system that transforms cohort data into balanced,
