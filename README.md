@@ -1,3 +1,5 @@
+### (Portfolio : [https://vinsl.github.io/class-allocation-tool/](...))
+
 # Class Allocation Tool
 A school class-allocation system that transforms cohort data into balanced,
 constraint-aware class assignments for primary education.
@@ -53,8 +55,7 @@ to ensure data protection and resilience.
 
 ## Brochure for schools
 
-- [Marketing one-page](brochure/index.html)
-- [Adaptability document (PDF)](brochure/adaptability.pdf)
+- [Marketing one-page](https://vinsl.github.io/class-allocation-tool)
 
 ## Project status
 
